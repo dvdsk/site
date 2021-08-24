@@ -1,3 +1,15 @@
 [submodule "public/themes/hyde"]
 	path = public/themes/hyde
 	url = https://github.com/spf13/hyde.git
+[submodule "public/themes/beautifulhugo"]
+	path = public/themes/beautifulhugo
+	url = https://github.com/halogenica/beautifulhugo.git
+[submodule "public/themes/minimo"]
+	path = public/themes/minimo
+	url = https://github.com/MunifTanjim/minimo
+[submodule "public/themes/anatole"]
+	path = public/themes/anatole
+	url = https://github.com/lxndrblz/anatole
+[submodule "public/themes/PaperMod"]
+	path = public/themes/PaperMod
+	url = https://github.com/adityatelange/hugo-PaperMod
