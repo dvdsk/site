@@ -9,6 +9,7 @@ if [[ BUILD_ARG == "--release" ]]; then
 	RELEASE=release
 fi
 
+# update hugo site
 (cd public && hugo -D)
 rsync -r public/public sgc:/tmp/
 

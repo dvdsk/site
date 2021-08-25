@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-source deploy "--release"
+source deploy.sh "--release"
