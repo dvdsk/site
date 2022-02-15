@@ -4,23 +4,23 @@ date: 2021-07-05T19:11:15+02:00
 draft: false
 ---
 
-Rust has a slim standard library. It provides many core types such as vectors and strings, abstractions the ecosystem builts on etc. However you will not find random numbers, time and date or other work. Such a small library keeps the ecosystem agile. Anything you might miss in the standard library has long been filled in by the community. Even better there is are many choices. As we figure out how to bend Rusts relativly unique semantics to our will better solutions to standard problems arrive. 
+Rust has a slim standard library. It provides many core types such as vectors and strings, abstractions the ecosystem builds on. However, you will not find random numbers nor time and date in the standard library. Luckily anything you might miss has long been filled in by the community. Sporadically innovative new crates (third party libraries) pop up for problems usually solved in the standard library. The slimness removes the standard library as competitor for these crates, lowering the bar to the spotlight. There is a downside, we can't just take the standard libraries solution but need to figure out crate provides what we need. 
 
-However this does mean you will often have to find a suitable libary. After a while you find you have collected your own standard library. This is mine... for now:
+Here are the crates I rely on:
 
 ***
 
 #### Errors
-If writing a library it is customary for your errors to be types that can be matched on. You do this by representing your errors as varients of an `enum`. The crate _thiserror_ makes it easy to make the enum conveniant. In an application seeing the chain of events that lead to the error helps a great deal. I use `eyre` to build these chains and get beutiful error reports.
+If writing a library it is customary for your errors to be types that can be matched on. You do this by representing your errors as variants of an `enum`. The crate _thiserror_ makes it easy to make the enum convenient. In an application seeing the chain of events that lead to the error helps a great deal. I use `eyre` to build these chains and get beautiful error reports.
 
 - for libraries: [thiserror](https://crates.io/crates/thiserror)
 - for applications: [color-eyre](https://crates.io/crates/color-eyre) most documentation lives [here](https://docs.rs/eyre/latest/eyre)
 
 #### Logging
-For now _tracing_ can be a bit of a hassle to set up. Note it also provides structured logging. For a simple logging solution grap _log_ and _log4rs_.
+You are probably familiar with a backtrace, often shown as a list of functions your program entered to get to the point where it crashed. Tracing gives you on demand 'backtraces' without crashing. You can even have it store parameters. Traces can be inspected by hand (from a file log for example) or using tools such as [jeager](https://www.jaegertracing.io). Right now _tracing_ can still be a bit of a hassle to set up. For simple applications you might want to use _log_ with _log4rs_.
 
 - simple applications: [log](https://crates.io/crates/log) + [log4rs](https://crates.io/crates/log4rs)
-- complex systems: [tracing](https://crates.io/crates/tracing)
+- complex systems: [tracing](https://crates.io/crates/tracing) also provides (structured) logging
 
 #### Command Line
 - Argument parsers: [clap](https://crates.io/crates/clap)
