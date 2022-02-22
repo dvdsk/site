@@ -1,6 +1,6 @@
 ---
 title: "Crates to build on"
-date: 2021-07-05T19:11:15+02:00
+date: 2021-12-05T12:18:15+01:00
 draft: false
 ---
 
@@ -27,7 +27,7 @@ You are probably familiar with backtraces, often shown as a list of functions yo
 
 #### Runtime
 - Async runtime: [tokio](https://crates.io/crates/tokio)
-- Macros and functions making async easier: [tokio](https://crates.io/crates/futures)
+- Macros and functions making async easier: [futures](https://crates.io/crates/futures)
 
 #### Web
 - Http client: [reqwest](https://crates.io/crates/reqwest) (async, optionally blocking)

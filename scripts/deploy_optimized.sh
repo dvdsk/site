@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
-source deploy.sh "--release"
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+source $SCRIPT_DIR/deploy.sh "--release"
