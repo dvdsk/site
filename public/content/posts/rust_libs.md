@@ -17,9 +17,9 @@ In Rust its customary for your errors to be types that allow pattern matching wh
 - for applications: [color-eyre](https://crates.io/crates/color-eyre) most documentation lives [here](https://docs.rs/eyre/latest/eyre)
 
 #### Logging
-You are probably familiar with backtraces, often shown as a list of functions your program entered to get to a point where it crashed. Tracing gives you on demand 'backtraces' without crashing. It can include the parameters for all the called functions. The traces can be inspected by hand (from a log file) or using tools such as [jeager](https://www.jaegertracing.io). Right now _tracing_ can still be a bit of a hassle to set up. For simple applications you might want to use _log_ with _log4rs_.
+You are probably familiar with backtraces, often shown as a list of functions your program entered to get to a point where it crashed. Tracing gives you on demand 'backtraces' without crashing. It can include the parameters for all the called functions. The traces can be inspected by hand (from a log file) or using tools such as [jeager](https://www.jaegertracing.io). Right now _tracing_ can still be a bit of a hassle to set up. For simple applications you might want to use _log_ with _simplelog_.
 
-- simple applications: [log](https://crates.io/crates/log) + [log4rs](https://crates.io/crates/log4rs)
+- simple applications: [log](https://crates.io/crates/log) + [simplelog](https://crates.io/crates/simplelog)
 - complex systems: [tracing](https://crates.io/crates/tracing) also provides (structured) logging
 
 #### Command Line
@@ -54,6 +54,7 @@ You are probably familiar with backtraces, often shown as a list of functions yo
 
 #### Embedded
 - Async runtime: [embassy](https://github.com/embassy-rs/embassy)
+You will need to use a git dependency as _embassy_ is still early in development. Do not forget to add a `rev` key with a specific commit hash to the `Cargo.toml` entry to ensure reproducable builds.
 - Efficient logging: [defmt](https://crates.io/crates/defmt)
 - Hardware abstraction: [embedded-hal](https://crates.io/crates/embedded-hal)
 - Global variables: [lazy\_static](https://crates.io/crates/lazy_static)
