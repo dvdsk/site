@@ -4,7 +4,7 @@ date: 2022-03-12T10:15:30+01:00
 draft: true
 ---
 
-My list of intermediate Neovim recipes, not so obvious operations and functions that make tasks easier and safer. This is a living document and growing as I find more good patterns.
+My list of intermediate _Neovim_ recipes, sequences of user actions and lua functions that make repetative tasks easier and safer. This is a living document and growing as I find more good patterns.
 
 
 ## Quick fix list fun
@@ -18,13 +18,12 @@ Find a text pattern and execute vim grammar on all lines that match. This one is
 5. Use the magic: `:cdo norm! @q`. Also known as: quick fix do, go to normal mode, run macro in register q.
 
 ## Custom (tele)scope
-LSP's are great for navigating through code. I constantly _go to definition_ or _find all occurences_ especially functions. Some languages have semantics that make it hard for an LSP (lua, python) or the LSP isnt quite there yet. I used live grep ([telescope](https://github.com/nvim-telescope/telescope.nvim)) instead searching for the name with a `(` attached. This small gist automates that and improves upon it by limiting the search to relevant files.
+LSP's are great for navigating through code. I constantly use _go to definition_ and _lsp_references_ especially for locating functions. Some languages (lua, python) have semantics that make it hard for an LSP to find these or the LSP isnt quite there yet. I used to open live grep ([telescope](https://github.com/nvim-telescope/telescope.nvim)) and search for the function name name with a `(` attached. This small gist automates and improves upon that by limiting the search to relevant files and picking the function pattern automatically.
 
-Support another language by adding a regex and valid file extensions. Or adapt it building a text search for another pattern limited.
+Support another language by adding a regex and valid file extensions. Or adapt it to build a text search for another pattern.
 
-To try it out put the code below in a .lua file and execute the file using `:luafile %`. If you like it add it to your config and bind a key to `function_scope()`:
 ```lua
-local function_str = {
+local function_def = {
  ["lua"] = "function",
  ["c"] = ".+ .+\\(.*\\) \\{", -- word followed by a name followed by arguments
 }
@@ -37,8 +36,9 @@ local extensions = {
 local function function_scope()
     local bufnr = vim.api.nvim_get_current_buf()
     local filetype = vim.bo[bufnr].filetype         -- filetype for current buffer
-    local search = function_str[filetype] .. " "    -- get the function pattern for this filetype
+    local search = function_def[filetype] .. " "    -- get the function pattern for this filetype
     local ext_patterns = function()                 -- filter candidate files by extension
+        local list = {}
         for _, ext in ipairs(extensions[filetype]) do  
             list[#list + 1] = "-g*." .. ext .. ""
         end
@@ -53,4 +53,10 @@ local function function_scope()
 end
 function_scope() -- call this from a keybind instead
 ```
+
+To try it out put the code below in a `lua` file and execute the file using `:luafile %`. If you like the idea take a look at the [complete code](https://github.com/dvdsk/new-linux-setup/blob/master/vim/lua/functions.lua) and map it using: 
+```lua
+map("n", "<leader>u", ":lua require'functions'.func_def_scope()<CR>", silent)
+```
+
 _idea from: [u/Combinatorilliance](https://www.reddit.com/r/neovim/comments/st1kxs/some_telescope_tips/)_
