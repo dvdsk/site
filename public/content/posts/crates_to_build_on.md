@@ -19,7 +19,8 @@ In Rust its customary for your errors to be types that allow pattern matching wh
 #### Logging
 You are probably familiar with backtraces, often shown as a list of functions your program entered to get to a point where it crashed. Tracing gives you on demand 'backtraces' without crashing. It can include the parameters for all the called functions. The traces can be inspected by hand (from a log file) or using tools such as [jeager](https://www.jaegertracing.io). Right now _tracing_ can still be a bit of a hassle to set up. For simple applications you might want to use _log_ with _simplelog_.
 
-- simple applications: [log](https://crates.io/crates/log) + [simplelog](https://crates.io/crates/simplelog)
+- simple applications: [log](https://crates.io/crates/log) + [simplelog](https://crates.io/crates/simplelog) \
+  hint: use [add_filter_ignore](https://docs.rs/simplelog/latest/simplelog/struct.ConfigBuilder.html#method.add_filter_ignore) to stop verbose dependencies from flooding the log _(usefull at low log levels)._
 - complex systems: [tracing](https://crates.io/crates/tracing) also provides (structured) logging
 
 #### Command Line
