@@ -2,6 +2,6 @@
 title: Home
 ---
 
-Hi! My name is David, I love building software. Here are some of my thoughts and projects I made.
+Hi! My name is David, I love to build software. Here I share my ideas, side projects and the things I found out along the way. Learn more [who I am](/about/).
 
-You can find me on github as [dvdsk](https://github.com/dvdsk), send mail to hello@`<this domain>` or contact me on [linkedin](www.linkedin.com/in/david-k-6a57771a1/).
+You can find me on Github as [dvdsk](https://github.com/dvdsk), send mail to hello@`<this domain>` or contact me on [LinkedIn](https://www.linkedin.com/in/david-k-6a57771a1/). 
