@@ -1,7 +1,7 @@
 ---
 title: "Vim recipes"
-date: 2022-03-12T10:15:30+01:00
-draft: true
+date: 2022-03-20T10:12:30+01:00
+draft: false
 ---
 
 My list of intermediate _Neovim_ recipes, sequences of user actions and lua functions that make repetative tasks easier and safer. This is a living document and growing as I find more good patterns.

@@ -1,0 +1,7 @@
+baseURL = "https://davidsk.dev/"
+languageCode = "en-us"
+title = "David S. K."
+seoTitle = "David Kleingeld" 
+description = "David Kleingeld's homepage and blog"
+theme = "beautifulhugo"
+# theme = "PaperMod"

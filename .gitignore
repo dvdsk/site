@@ -1,6 +1,6 @@
 /target
 public/public/
-public/config.toml
 Cargo.lock
 public/themes/
 public/.hugo_build.lock
+*.bak

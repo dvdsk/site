@@ -1,6 +1,6 @@
 ---
-title: "About"
-date: 2022-03-20T15:04:16+01:00
+title: "About me"
+seoTitle: "David Kleingeld"
 draft: false
 menu: "main"
 ---
@@ -8,13 +8,7 @@ menu: "main"
 Summary
 =======
 
-I am a software engineer experience in building async services. I work
-with a focus on maintainability. I am an active proponent of
-refactoring. I have deployed to Linux hosts and have worked with tools
-like Docker, SystemD and HaProxy. My personal projects include a service
-to on demand move a Minecraft server instance between systems as well as
-several open source projects. Serving as chair of the Faculty Council I
-have led meetings and helped shape University policy.
+My name is David Kleingeld, I am a software engineer experienced in building async services. I work with a focus on maintainability. I am an active proponent of refactoring. I have deployed to Linux hosts and have worked with tools like Docker, SystemD and HaProxy. My personal projects include a service to on demand move a Minecraft server instance between systems as well as several open source projects. Serving as chair of the Faculty Council I have led meetings and helped shape University policy.
 
 Education
 =========
