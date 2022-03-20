@@ -90,7 +90,7 @@ _A compact time series data backend optimized for linear searches_
 
 I maintain other side projects including cross platform [podcast player](https://github.com/dvdsk/pods) and [alarm](https://github.com/dvdsk/alarm) apps and a [home automation system](https://github.com/dvdsk/HomeAutomation) which has been in use, expanded and **maintained** for over 5 years. I also dabble in **async embedded** for example I build a basic [oscilloscope](https://github.com/dvdsk/rustyscopes) to debug a project for a robotics course. I have contributed code to various projects on **GitHub**.
 
-Other Experiances
+Other Experiences
 -----
 
 I served one year as **Chair of the Faculty Council** leading the
