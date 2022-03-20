@@ -1,7 +1,7 @@
 ---
 title: "About"
 date: 2022-03-20T15:04:16+01:00
-draft: true
+draft: false
 menu: "main"
 ---
 
