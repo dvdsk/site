@@ -4,6 +4,7 @@ date: 2022-03-17T16:11:15+02:00
 draft: false
 aliases:
     - /p
+    - /projects
 ---
 
 Over the past years I have worked on a lot of side projects, using software to solve some perceived problem. This is a list of my side work, the motivations behind it and issues a ran into. Most recent projects first.

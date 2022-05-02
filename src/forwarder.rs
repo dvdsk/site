@@ -1,9 +1,8 @@
 use std::collections::HashMap;
-use std::convert::TryFrom;
 use std::fs;
 use std::sync::{Arc, RwLock};
 
-use actix_web::http::{header, Uri};
+use actix_web::http::header;
 use actix_web::{web, HttpResponse};
 use color_eyre::{eyre::eyre, eyre::WrapErr, Result};
 use itertools::Itertools;
@@ -19,8 +18,6 @@ fn url_pairs(line: &str) -> Result<(String, String)> {
     let (from, to) = line
         .split_once(" ")
         .ok_or_else(|| eyre!("Could not split line: {line}"))?;
-    let _ = Uri::try_from(from).wrap_err_with(|| format!("Could not parse into Uri: {from}"))?;
-    let _ = Uri::try_from(to).wrap_err_with(|| format!("Could not parse into Uri: {to}"))?;
     Ok((from.to_owned(), to.to_owned()))
 }
 
@@ -30,8 +27,8 @@ fn reload(table: &Table) -> Result<()> {
 
     let (new_map, errs): (HashMap<_, _>, Vec<_>) = content
         .lines()
-        .skip_while(|s| s.starts_with("#"))
-        .skip_while(|s| s.is_empty())
+        .filter(|s| !s.starts_with("#"))
+        .filter(|s| !s.is_empty())
         .map(url_pairs)
         .partition_result();
     for err in errs {

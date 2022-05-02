@@ -2,6 +2,8 @@
 title: "Crates to build on"
 date: 2021-12-05T12:18:15+01:00
 draft: false
+aliases:
+    - /build_on
 ---
 
 Rust has a slim standard library. It provides many core types such as vectors and strings, abstractions the ecosystem builds on. You will not, however find random numbers or time and date in the standard library. Luckily anything you might miss has long been filled in by the community. Innovative new crates (third party libraries) also pop up for problems usually solved in the standard library. The slimness removes the standard library as competitor for these crates, lowering the bar to the spotlight. The downside is that we can't just take the standard libraries solution but need to figure out, which crate provides what we need. 
