@@ -1,7 +1,7 @@
 use actix_web::web::Data;
 use structopt::StructOpt;
 use actix_files::Files;
-use actix_web::{middleware, web, App, HttpServer};
+use actix_web::{middleware, web, App, HttpServer, guard};
 
 mod forwarder;
 
@@ -40,8 +40,8 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Logger::default())
             .service(
                 web::resource("/{a}")
-                    // .name("url shortner")
-                    // .guard(guard::Get())
+                    .name("url shortner")
+                    .guard(guard::Get())
                     .to(forwarder::route),
             )
             .service(Files::new("/", "./files/public/").index_file("index.html"))

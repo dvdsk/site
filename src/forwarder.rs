@@ -75,7 +75,7 @@ impl ForwardingTable {
 
 pub async fn route(data: web::Data<ForwardingTable>, path: web::Path<String>) -> HttpResponse {
     let table = data.0.read().unwrap();
-    match dbg!(table.get(&path.into_inner())) {
+    match table.get(&path.into_inner()) {
         Some(forward_to) => HttpResponse::TemporaryRedirect()
             .append_header((header::LOCATION, forward_to.as_str()))
             .finish(),

@@ -4,3 +4,4 @@ Cargo.lock
 public/themes/
 public/.hugo_build.lock
 *.bak
+files/
