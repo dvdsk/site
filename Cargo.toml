@@ -10,9 +10,13 @@ edition = "2018"
 structopt = { version = "0.3" }
 log = "0.4"
 fern = { version = "0.6", features = ["colored"] }
+color-eyre = "0.6"
+itertools = "0.10"
 
 chrono = "0.4"
 derive_more = "0.99"
+hotwatch = "0.4"
 
-actix-web = { version = "3" }
-actix-files = { version = "0.3" }
+tokio = { version = "1", features = ["fs"] }
+actix-web = { version = "4" }
+actix-files = { version = "0.6" }
