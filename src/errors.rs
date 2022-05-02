@@ -1,12 +1,10 @@
 use fern::colors::{Color, ColoredLevelConfig};
-use structopt::clap::arg_enum;
+use clap::ArgEnum;
 
-arg_enum!{
-    #[derive(PartialEq, Debug)]
-    pub enum LogLevel {
-        Critical,
-        Info,
-    }
+#[derive(Debug, Copy, Clone, PartialEq, Eq, ArgEnum)]
+pub enum LogLevel {
+    Critical,
+    Info,
 }
 
 pub fn setup_logging(verbosity: &LogLevel) -> Result<(), fern::InitError> {

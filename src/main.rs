@@ -1,16 +1,15 @@
 use actix_web::web::Data;
-use structopt::StructOpt;
 use actix_files::Files;
 use actix_web::{middleware, web, App, HttpServer, guard};
+use clap::Parser;
 
 mod forwarder;
-
 mod errors;
-use errors::LogLevel;
 
 use self::forwarder::ForwardingTable;
 
-#[derive(Debug, StructOpt)]
+
+#[derive(Debug, Parser)]
 #[structopt(name = "webserver")]
 /// Personal page backend, shows either a dashboard if logged in or
 /// a static site generated using Hugo
@@ -19,15 +18,15 @@ struct Opt {
     #[structopt(long)]
     port: u16,
     /// log level least, one of: Critical, Info
-    #[structopt(long, default_value = "Critical")]
-    verbosity: LogLevel,
+    #[structopt(arg_enum, long, default_value = "Critical")]
+    verbosity: errors::LogLevel,
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     color_eyre::install().unwrap();
 
-    let opt = Opt::from_args();
+    let opt = Opt::parse();
     errors::setup_logging(&opt.verbosity).unwrap();
 
     let forwarder = ForwardingTable::init();
