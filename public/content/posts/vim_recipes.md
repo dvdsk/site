@@ -14,7 +14,7 @@ Find a text pattern and execute vim grammar on all lines that match. This one is
 2. Send the entries to the _quick fix list_ `Ctrl + q`
 3. Quick fix lists just openend. Go to the first item (press `enter`) or use `:cfirst`. 
 4. Record a macro (I press q twice, recording in register q). Thanks the to previous step we start with the cursor at the exact place it will be when later executing the macro.
-5. Undo the changes done while recording the macro (or they will be applied twice)
+5. Undo the changes done while you where recording the macro (or they will be applied twice)
 5. Use the magic: `:cdo norm! @q`. Also known as: quick fix do, go to normal mode, run macro in register q.
 
 ## Custom (tele)scope
