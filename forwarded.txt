@@ -1,4 +1,5 @@
 # format from<space>to
 
-thesis https://github.com/dvdsk/Thesis/blob/main/report/main.pdf
-projects posts/projects 
+thesis https://github.com/dvdsk/Thesis
+projects posts/projects
+to_build_on posts/crates_to_build_on
