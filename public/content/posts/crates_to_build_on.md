@@ -25,6 +25,10 @@ You are probably familiar with backtraces, often shown as a list of functions yo
   hint: use [add_filter_ignore](https://docs.rs/simplelog/latest/simplelog/struct.ConfigBuilder.html#method.add_filter_ignore) to stop verbose dependencies from flooding the log _(usefull at low log levels)._
 - complex systems: [tracing](https://crates.io/crates/tracing) also provides (structured) logging
 
+#### Tests
+- checking float equality: [float_eq](https://crates.io/crates/float_eq) \
+	basic usage: `assert_float_eq!(a, b, ulps <= 1)` for more see: [docs](https://jtempest.github.io/float_eq-rs/book/tutorials/basic_usage.html)
+
 #### Command Line
 - Argument parsers: [clap](https://crates.io/crates/clap)
 
