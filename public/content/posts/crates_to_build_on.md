@@ -6,24 +6,24 @@ aliases:
     - /build_on
 ---
 
-Rust has a slim standard library. It provides many core types such as vectors and strings, abstractions the ecosystem builds on. You will not, however find random numbers or time and date in the standard library. Luckily anything you might miss has long been filled in by the community. Innovative new crates (third party libraries) also pop up for problems usually solved in the standard library. The slimness removes the standard library as competitor for these crates, lowering the bar to the spotlight. The downside is that we can't just take the standard libraries solution but need to figure out, which crate provides what we need. 
+Rust has a slim standard library. It provides many core types such as vectors and strings, abstractions the ecosystem builds on. You will not, however find random numbers or time and date in the standard library. Luckily anything you might miss has long been filled in by the community. Innovative new crates (third party libraries) also pop up for problems usually solved in the standard library. The slimness removes the standard library as competitor for these crates, lowering the bar to the spotlight. The downside is that we can't just take the standard libraries' solution but need to figure out, which crate provides what we need. 
 
 Here are the crates I rely on:
 
 ***
 
 #### Errors
-In Rust its customary for your errors to be types that allow pattern matching when writing a library. Normally you accompish by representing your errors as variants of an `enum`. The crate _thiserror_ helps you to make the enum convenient to use. When writing an application however, you match on errors, handling them or reporting them. I use `eyre` to build beautiful error reports that give a usefull backtrace.
+In Rust its customary for your errors to be types that allow pattern matching when writing a library. Normally you accomplish by representing your errors as variants of an `enum`. The crate _thiserror_ helps you to make the enum convenient to use. When writing an application however, you match on errors, handling them or reporting them. I use `eyre` to build beautiful error reports that give a useful backtrace.
 
-- for libraries: [thiserror](https://crates.io/crates/thiserror)
-- for applications: [color-eyre](https://crates.io/crates/color-eyre) most documentation lives [here](https://docs.rs/eyre/latest/eyre)
+- For libraries: [thiserror](https://crates.io/crates/thiserror)
+- For applications: [color-eyre](https://crates.io/crates/color-eyre) most documentation lives [here](https://docs.rs/eyre/latest/eyre)
 
 #### Logging
 You are probably familiar with backtraces, often shown as a list of functions your program entered to get to a point where it crashed. Tracing gives you on demand 'backtraces' without crashing. It can include the parameters for all the called functions. The traces can be inspected by hand (from a log file) or using tools such as [jeager](https://www.jaegertracing.io). Right now _tracing_ can still be a bit of a hassle to set up. For simple applications you might want to use _log_ with _simplelog_.
 
-- simple applications: [log](https://crates.io/crates/log) + [simplelog](https://crates.io/crates/simplelog) \
-  hint: use [add_filter_ignore](https://docs.rs/simplelog/latest/simplelog/struct.ConfigBuilder.html#method.add_filter_ignore) to stop verbose dependencies from flooding the log _(usefull at low log levels)._
-- complex systems: [tracing](https://crates.io/crates/tracing) also provides (structured) logging
+- Simple applications: [log](https://crates.io/crates/log) + [simplelog](https://crates.io/crates/simplelog) \
+  hint: use [add_filter_ignore](https://docs.rs/simplelog/latest/simplelog/struct.ConfigBuilder.html#method.add_filter_ignore) to stop verbose dependencies from flooding the log _(useful at low log levels)._
+- Complex systems: [tracing](https://crates.io/crates/tracing) also provides (structured) logging
 
 #### Tests
 - checking float equality: [float_eq](https://crates.io/crates/float_eq) \
@@ -58,6 +58,7 @@ You are probably familiar with backtraces, often shown as a list of functions yo
 
 #### Standard lib expansion
 - Bounded queue: [crossbeam-channel](https://crates.io/crates/crossbeam-channel)
+- Derive traits: [derivative](https://crates.io/crates/derivative)
 
 #### Embedded
 - Async runtime: [embassy](https://github.com/embassy-rs/embassy)
