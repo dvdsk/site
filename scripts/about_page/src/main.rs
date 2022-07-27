@@ -1,9 +1,14 @@
 use regex::Regex;
 use std::fs;
+use std::ops::Range;
+use std::str::CharIndices;
 
 fn re_format(line: &str) -> String {
     let re = Regex::new(r"\\text((hl)|(bf))\{(?P<text>.+?)\}").unwrap();
     let line = re.replace_all(line, "**$text**");
+
+    let re = Regex::new(r"\\textit\{(?P<text>.+?)\}").unwrap();
+    let line = re.replace_all(&line, "*$text*");
 
     let re = Regex::new(r"\\myhref\{(?P<url>.+?)\}\{(?P<name>.+?)\}").unwrap();
     let line = re.replace_all(&line, "[$name]($url)");
@@ -17,26 +22,35 @@ fn re_format(line: &str) -> String {
     line.to_string()
 }
 
-fn bracket_enclosed_to_vec(line: &str) -> Vec<&str> {
-    let mut list = Vec::new();
-    let mut prev = 0;
+fn find_matching_bracket(line: &mut CharIndices) -> Option<Range<usize>> {
     let mut depth = 0;
-    for (i, char) in line.char_indices() {
+    let mut start = None;
+    for (i, char) in line {
         match (char, depth) {
             ('{', 1..) => depth += 1,
             ('{', 0) => {
+                start = Some(i);
                 depth += 1;
-                prev = i;
             }
             ('}', 2..) => depth -= 1,
             ('}', 1) => {
-                depth -= 1;
-                list.push(&line[prev + 1..i]);
+                let start = start.expect("cant reach depth 1 without passing 0 and setting start");
+                return Some(start..i);
             }
             ('}', 0) => panic!("improperly closed bracket"),
             (_, _) => continue,
         }
     }
+    None
+}
+
+fn bracket_enclosed_to_vec(line: &str) -> Vec<&str> {
+    let mut indices = line.char_indices();
+    let list: Vec<_> = std::iter::from_fn(move || match find_matching_bracket(&mut indices) {
+        Some(range) => Some(&line[range]),
+        None => None,
+    })
+    .collect();
     list
 }
 
@@ -52,25 +66,21 @@ struct CvEntry<'a> {
     what: &'a str,
     location: &'a str,
     note: &'a str,
-    description: &'a str,
+    description: String,
 }
 
 impl<'a> TryFrom<&'a str> for CvEntry<'a> {
     type Error = ();
     fn try_from(line: &'a str) -> Result<Self, Self::Error> {
-        let line = line.strip_prefix(r"\cventry{").unwrap();
-        let (date, rest) = line.split_once('}').unwrap();
-        let (what, rest) = rest.strip_prefix('{').unwrap().split_once("}{").unwrap();
-        let (location, rest) = rest.split_once("}{").unwrap();
-        let (note, rest) = rest.strip_prefix("}{").unwrap().split_once("}{").unwrap();
-        let (description, _) = rest.split_once("}").unwrap();
-        Ok(Self {
-            date,
-            what,
-            location,
-            note,
-            description,
-        })
+        let items = bracket_enclosed_to_vec(line);
+        dbg!(&items);
+        Ok(dbg!(Self {
+            date: items[0],
+            what: items[1],
+            location: items[2],
+            note: items[4],
+            description: re_format(items[5]),
+        }))
     }
 }
 
