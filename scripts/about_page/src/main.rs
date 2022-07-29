@@ -1,7 +1,11 @@
+use parser::Latex;
 use regex::Regex;
 use std::fs;
 use std::ops::Range;
 use std::str::CharIndices;
+
+mod parser;
+mod format;
 
 fn re_format(line: &str) -> String {
     let re = Regex::new(r"\\text((hl)|(bf))\{(?P<text>.+?)\}").unwrap();
@@ -35,7 +39,7 @@ fn find_matching_bracket(line: &mut CharIndices) -> Option<Range<usize>> {
             ('}', 2..) => depth -= 1,
             ('}', 1) => {
                 let start = start.expect("cant reach depth 1 without passing 0 and setting start");
-                return Some(start..i);
+                return Some(start+1..i);
             }
             ('}', 0) => panic!("improperly closed bracket"),
             (_, _) => continue,
@@ -66,21 +70,20 @@ struct CvEntry<'a> {
     what: &'a str,
     location: &'a str,
     note: &'a str,
-    description: String,
+    description: Vec<Latex>,
 }
 
 impl<'a> TryFrom<&'a str> for CvEntry<'a> {
     type Error = ();
     fn try_from(line: &'a str) -> Result<Self, Self::Error> {
         let items = bracket_enclosed_to_vec(line);
-        dbg!(&items);
-        Ok(dbg!(Self {
+        Ok(Self {
             date: items[0],
             what: items[1],
             location: items[2],
             note: items[4],
-            description: re_format(items[5]),
-        }))
+            description: parser::parse_line(items[5]),
+        })
     }
 }
 
@@ -96,7 +99,7 @@ impl CvEntry<'_> {
         let note = re_format(note);
         let mut res = format!("- {date} **{what}** _{location}_ {note}  \n");
         if !description.is_empty() {
-            res = res + &format!("_{description}_\n");
+            res = res + &format::latex_to_markdown(description) + "\n";
         }
         res
     }

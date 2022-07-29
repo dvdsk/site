@@ -46,19 +46,19 @@
 I am a software engineer experienced in building async services. I work with a focus on maintainability. I have deployed to Linux hosts and have worked with tools like Docker, SystemD and HaProxy. My open source projects include a distributed file system and a macro to turn a struct into a typed database. Serving as chair of the Faculty Council, I have led meetings and helped shape University policy. I enjoy teaching my programming group to write beautiful code.
 
 \section{Education}
-\cventry{2019--2022}{MSc Computer Science}{Leiden University}{}{\texthl{Cum Laude}}{Focused on cloud and distributed computing, explored other fields including AI, robotics and CS-theory} % TODO add thesis title keep if relevant
+\cventry{2019--2022}{MSc Computer Science}{Leiden University}{}{\texthl{Cum Laude}}{Focused on cloud and distributed computing, explored other fields including AI, robotics and CS-theory \\ \textit{Thesis: \myhref{https://davidsk.dev/thesis}{GovFs}, a highly scalable consistent distributed file system}} % TODO add thesis title keep if relevant
 \cventry{2014--2019}{Double BSc Physics and Astronomy}{Leiden University}{}{}{}
 
 \section{Skills}
 \subsection{Software Engineering}
-My main objective when developing is to produce readable code that is easy to change, which I can then more easily turn into high performance code where needed. I have adopted \texthl{test driven development} as it makes refactoring less risky, meaning it is much easier to keep a clean and readable code-base. Building a \texthl{distributed} file system I learned behavior can change radically with load and the importance of testing under load.
+While developing I aim to build readable code that is easy to change. I can then more easily turn into high performance code where needed. I have adopted \texthl{test driven development} as it makes refactoring less risky, meaning it is much easier (and realistic) to maintain a clean and readable code-base. Building a \texthl{distributed} file system I experienced the importance of running test under high load. To keep my software engineering skills growing I engage with large open source projects, read great titles such as "The Pragmatic Programmer" and "Refactoring", and explore these ideas in side projects.
 
 \subsection{Programming Languages}
 \begin{itemize}
 	\item \textbf{Rust}: I love writing Rust code. I believe it has made me a better programmer, I have become more aware of object and reference \texthl{lifetimes} and how to use \texthl{concurrency} safely when using other languages. 
 	\item \textbf{C++}: has major issues regarding memory safety. I try to mitigate this by using the standard library in debug mode, using \texthl{address sanitizer} and encapsulating resources where possible. 
 	\item \textbf{Python}: I am a strong proponent of type hinting in Python as it helps linters detect more errors before run-time. I use Python for a wide variety of tasks ranging from data science to building \texthl{scaling cloud} systems.
-	\item \textbf{Bash}: Because of its ubiquity I have become quite proficient at using Bash to automate DevOps tasks, such deployment and interactive monitoring of a cluster during testing. I would not, however, use the error-prone arcane wizardry of Bash outside of development and testing.
+	\item \textbf{Bash/Unix CLI}: Because of there ubiquity I have become quite proficient at using Bash and CLI tools to automate \texthl{DevOps} tasks, such as: deployment, monitoring a cluster and filtering megabytes of logs. I would not, however, use the error-prone arcane wizardry of Bash outside of development and testing.
 	\item \textbf{Lua}: I have used Lua to script a large \texthl{Neovim} plugin. I appreciate its performance, though found it is a challenge to structure code well.
 \end{itemize}
 
@@ -67,7 +67,7 @@ My main objective when developing is to produce readable code that is easy to ch
 \begin{itemize}
 	\item \textbf{Linux}: I have used Linux on my desktop and servers since 2014. After trying Fedora and Debian, I settled on using Pop!\_OS as my daily driver, because it offers stability and LTS as well as up-to-date packages. 	
 	\item \textbf{Sandboxing}: My services are sandboxed with \textbf{SystemD} instead of container engines such as \textbf{Docker} and \textbf{Podman}. I use these to simplify setting up reproducible builds and run-time environments.
-	\item \textbf{Architecture}: I use a \textbf{micro-services} architecture for some of my larger projects . I use \textbf{HaProxy} for both HTTP and TCP TLS termination and routing.
+	\item \textbf{Architecture}: I use a \textbf{micro-services} architecture for some of my larger projects. I use \textbf{HaProxy} for both HTTP and TCP TLS termination and routing.
 \end{itemize}
 
 \section{Experience}
@@ -79,7 +79,7 @@ My main objective when developing is to produce readable code that is easy to ch
 
 Other projects include: cross-platform \myhref{https://github.com/dvdsk/pods}{podcast player} and \myhref{https://github.com/dvdsk/alarm}{alarm} apps, a \myhref{https://github.com/dvdsk/HomeAutomation}{home automation system} which has been in use, expanded and \texthl{maintained} for over 5 years. Furthermore, I dabble in \textbf{async embedded} building a basic \myhref{https://github.com/dvdsk/rustyscopes}{oscilloscope}. Finally, I worked on a Neovim extension for grammar, spelling and style checker in strings and comments.\\
 \smallskip
-I have contributed code to various projects on \texthl{GitHub}.
+I have contributed code to various projects on \texthl{GitHub} and recently contributed a \myhref{https://github.com/rust-lang/libs-team/issues/55}{proposal} for expanding the \texthl{Rust} standard library.
 
 \subsection{Other}
 I served one year as \textbf{Chair of the Faculty Council} leading the council meetings and successfully negotiating to keep a number of courses available to all students.
