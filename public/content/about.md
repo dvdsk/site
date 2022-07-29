@@ -10,8 +10,8 @@ I am a software engineer experienced in building async services. I work with a f
 Education
 =======
 - 2019--2022 **MSc Computer Science** _Leiden University_ **Cum Laude**  
-_Focused on cloud and distributed computing, explored other fields including AI, robotics and CS-theory   
- \textit{Thesis: \myhref{https://davidsk.dev/thesis_
+Focused on cloud and distributed computing, explored other fields including AI, robotics and CS-theory   
+ *Thesis: [GovFs](https://davidsk.dev/thesis), a highly scalable consistent distributed file system*
 - 2014--2019 **Double BSc Physics and Astronomy** _Leiden University_   
 
 
