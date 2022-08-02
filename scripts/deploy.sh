@@ -10,7 +10,7 @@ if [[ $BUILD_ARG == "--release" ]]; then
 fi
 
 # update hugo site
-(cd public && hugo -D)
+(cd public && hugo)
 rsync -r public/public sgc:/tmp/
 rsync -r forwarded.txt sgc:/tmp/
 
