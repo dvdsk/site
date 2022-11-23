@@ -17,7 +17,7 @@ rsync -r forwarded.txt sgc:/tmp/
 
 cross build --target=aarch64-unknown-linux-musl $BUILD_ARG
 rsync -vh --progress \
-  target/aarch64-unknown-linux-gnu/$RELEASE/webserver \
+  target/aarch64-unknown-linux-musl/$RELEASE/webserver \
   $SERVER:/tmp/
 
 cmds="
