@@ -43,7 +43,7 @@ async fn main() -> std::io::Result<()> {
                     .guard(guard::Get())
                     .to(forwarder::route),
             )
-            .service(Files::new("/", "./files/public/").index_file("index.html"))
+            .service(Files::new("/", "./files/public").index_file("index.html"))
     })
     .bind(format!("127.0.0.1:{}", opt.port))?
     .run()

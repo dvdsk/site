@@ -18,6 +18,8 @@ In Rust its customary for your errors to be types that allow pattern matching wh
 - For libraries: [thiserror](https://crates.io/crates/thiserror)
 - For applications: [color-eyre](https://crates.io/crates/color-eyre) most documentation lives [here](https://docs.rs/eyre/latest/eyre)
 
+- To check/prove a function can't crash your program: [no-panic](https://crates.io/crates/no-panic)
+
 #### Logging
 You are probably familiar with backtraces, often shown as a list of functions your program entered to get to a point where it crashed. Tracing gives you on demand 'backtraces' without crashing. It can include the parameters for all the called functions. The traces can be inspected by hand (from a log file) or using tools such as [jeager](https://www.jaegertracing.io). Right now _tracing_ can still be a bit of a hassle to set up. For simple applications you might want to use _log_ with _simplelog_.
 
@@ -45,6 +47,7 @@ You are probably familiar with backtraces, often shown as a list of functions yo
 #### Data
 - High performance embedded database: [sled](https://crates.io/crates/sled)
 - Concurrent hashmap: [dashmap](https://crates.io/crates/dashmap)
+- Lock free eventually consistent map [evmap](https://crates.io/crates/evmap)
 - Serialization and deserialization to many formats: [serde](https://crates.io/crates/serde).
 	You use serde together with a crate that specifies a format to serialize to/from any rust type. See this [list](https://docs.serde.rs/serde) of the formats.
 
