@@ -18,7 +18,7 @@ struct Opt {
     #[structopt(long)]
     port: u16,
     /// log level least, one of: Critical, Info
-    #[structopt(arg_enum, long, default_value = "Critical")]
+    #[structopt(arg_enum, long, default_value = "critical")]
     verbosity: errors::LogLevel,
 }
 
