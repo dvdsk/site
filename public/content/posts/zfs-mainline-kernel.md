@@ -44,28 +44,29 @@ execute `sh autogen.sh`
 then call ./configure --with-linux=/build/linux-{version} --with-linux-obj=/build/linux-{version}
 the build the kernel with make -s -j$(nproc)
 
-now we make the kernel modules (except zfs):
+now we build the zfs kernel module
+```
+cd to zfs build folder
+sudo make install
+```
+
+now we make the normal (in tree) kernel modules (except zfs):
 ```
 cd to kernel build folder
 sudo make modules_install -j $(nproc) 
 ```
 
-we strip the kernel modules of their debug info making them around 10x smaller (otherwise the final kernel+modules would be over 500 MB!):
+we strip the modules of their debug info making them around 10x smaller (otherwise the final kernel+modules would be over 500 MB!):
 ```
 cd /lib/modules/<new_kernel>
-find . -name "*.ko" -exec strip --strip-unneeded {} +
+sudo find . -name "*.ko" -exec strip --strip-unneeded {} +
 ```
 
-now we can install the kernel which will build the initial ram file system from the compiled kernel and its modules:
+now we can install the kernel with all the modules. That means build the initial ram file system from the compiled kernel and its modules:
 ```
 sudo make install -j $(nproc)
 ```
 
-with the kernel in place we install our compiled zfs
-```
-cd to zfs build folder
-sudo make install; sudo ldconfig; sudo depmod
-```
 
 ## Verify everything should work
 check that the zfs module exists: /lib/modules/<kernel version>/extra/zfs.ko
@@ -92,7 +93,7 @@ From the systemd [docs](https://www.freedesktop.org/software/systemd/man/systemd
 
 If we get the 
 
-### Efi partition out of space
+### Efi full, too large initrd.img
 sort all the files in the efi partition by size:
 ```bash
 du -h /boot/efi | sort -n | tail -10
@@ -103,6 +104,6 @@ You do not want to boot a kernel you just compiled without a previous working ke
 
 For example:
 ```
-cp /boot/initrd.img-6.1.6-76060106-generic /boot/efi/EFI/Pop_OS-63ad2a51-0406-4edc-9ba5-59756de1bf48/initrd.img-previous
-cp /boot/vmlinuz-6.1.6-76060106-generic /boot/efi/EFI/Pop_OS-63ad2a51-0406-4edc-9ba5-59756de1bf48/vmlinuz-previous.efi
+sudo cp /boot/initrd.img-6.1.6-76060106-generic /boot/efi/EFI/Pop_OS-63ad2a51-0406-4edc-9ba5-59756de1bf48/initrd.img-previous
+sudo cp /boot/vmlinuz-6.1.6-76060106-generic /boot/efi/EFI/Pop_OS-63ad2a51-0406-4edc-9ba5-59756de1bf48/vmlinuz-previous.efi
 ```
