@@ -4,6 +4,8 @@ date: 2022-03-17T16:11:15+02:00
 draft: true
 ---
 
+
+### Sources and dependencies
 Check te META file from [OpenZFS on Linux](https://github.com/openzfs/zfs) for the maximum supported Linux version. 
 
 get the requirements to build [OpenZFS](https://openzfs.github.io/openzfs-docs/Developer%20Resources/Building%20ZFS.html#installing-dependencies):
@@ -12,68 +14,95 @@ get the requirements to build [OpenZFS](https://openzfs.github.io/openzfs-docs/D
 get the requirements to build the kernel (these overlap with the reqs for OpenZFS):
 `sudo apt-get install git fakeroot build-essential ncurses-dev xz-utils libssl-dev bc flex libelf-dev bison`
 
-get the kernel tar.xz from kernel.org, 
+Get a kernel tar.xz from [kernel.org](kernel.org) with a version equal to or lower then the maximum supported by _OpenZFS on Linux_.
 I recommend storing it in a new build dir in the root of the file system (thus `/build`). Assuming you do not use zfs on root you can still retry the build if zfs no longer works.
 unzip with `tar -xf linux-{version}.tar.xz`
 
+
+### Building the Kernel
 First we configure the kernel.
 copy the current kernels config
 `cp /boot/config-$(uname -r) .config`
 
-you could now configure the kernel and remove everything you dont need using
+Optional: configure the kernel and remove functionality you do not need using:
+```bash
 make menuconfig
-
-compile using `make -j $(nproc)` 
-the `-j $(nproc)` ensures we use all hardware threads speeding things up quite a bit on a modern machine even then go grab a book this is going to take a while, about an hour on my machine. Unfortunately there isnt really a progress bar. You know it is almost done once most lines start with LD (linking) instead of CC (compiling). Most time will be spend compiling drivers, once thats done you are almost there!
-
-you might run into an certificate error which looks like this:
-`make[2]: *** No rule to make target 'debian/canonical-certs.pem', needed by 'certs/x509_certificate_list'.  Stop.`
-and or (possibly later)
-`make[2]: *** No rule to make target 'debian/canonical-revoked-certs.pem', needed by 'certs/x509_revocation_list'.  Stop.`
-The proper way to solve this would be to find a list of certificates and revoked certificates from a trusted source (probably the current kernel sources/headers from your distro) the simplest approach is to disable signature checking:
-
-In which case do make menuconfig go to:
-Cryptographic API -> Certificates for signature checking
-then find the line ending in `Additional X.509 keys for default system keyring` and set the sting to nothing`
-if you also get the second error do the same for the line ending in `X.509 certificates to be preloaded into the system blacklist`
-_do not forget to save before exiting_
-
-
-now we can build OpenZFS, here we mostly follow the instructions on [openzfs.github.io](https://openzfs.github.io/openzfs-docs/Developer%20Resources/Building%20ZFS.html#configure-and-build)
-execute `sh autogen.sh`
-then call ./configure --with-linux=/build/linux-{version} --with-linux-obj=/build/linux-{version}
-the build the kernel with make -s -j$(nproc)
-
-now we build the zfs kernel module
 ```
-cd to zfs build folder
-sudo make install
+Do not forget to save before closing menuconfig.
+
+Compile the kernel 
+run: 
+```bash
+make -j $(nproc)
 ```
 
-now we make the normal (in tree) kernel modules (except zfs):
+The argument `-j $(nproc)` tells _make_ to use all hardware threads. This speeds things up quite a bit on a modern machine. Still building a kernel takes a while, go grab a book! 
+
+Unfortunately there is not a progress bar. Compilation is getting to the end once lines no longer contain the word driver. Once most lines start with LD (linking) instead of CC (compiling) it will be done any second.
+
+Once the kernel has been build we make the normal (in tree) kernel modules. We will add ZFS to those in the next section (except zfs):
 ```
 cd to kernel build folder
 sudo make modules_install -j $(nproc) 
 ```
 
-we strip the modules of their debug info making them around 10x smaller (otherwise the final kernel+modules would be over 500 MB!):
+#### Certificate error
+Depending on the setup of your machine you can run into a certificate error which looks like this:
 ```
-cd /lib/modules/<new_kernel>
-sudo find . -name "*.ko" -exec strip --strip-unneeded {} +
+make[2]: *** No rule to make target 'debian/canonical-certs.pem', needed by 'certs/x509_certificate_list'.  Stop.
+```
+and/or (possibly only after fixing the one above)
+```
+make[2]: *** No rule to make target 'debian/canonical-revoked-certs.pem', needed by 'certs/x509_revocation_list'.  Stop.
+```
+This certificate is used to verify the kernels source has not been tempered with. It was used while building your currently running kernel. By copying the current kernel's config we got the need for this certificate. It is however not present on our machine. The proper way to solve this would be to find a trustworthy source for a certificate signing the kernel source. The simplest approach is to disable signature checking. We choose to trust our source of the source code ([kernel.org](kernel.org)) and disable signature checking:
+
+run 
+```
+make menuconfig
+```
+In _menuconfig_ navigate to:
+`Cryptographic API` -> `Certificates for signature checking`
+Now find the line ending in `Additional X.509 keys for default system keyring` and set its value to nothing. You will probably need to do the same for the line ending in `X.509 certificates to be preloaded into the system blacklist`. Now _save_ and _exit_ _menuconfig_ then continue building the kernel.
+
+### Building OpenZFS
+now we can build OpenZFS, here we mostly follow the instructions on [openzfs.github.io](https://openzfs.github.io/openzfs-docs/Developer%20Resources/Building%20ZFS.html#configure-and-build)
+execute `sh autogen.sh`
+then call ./configure --with-linux=/build/linux-{version} --with-linux-obj=/build/linux-{version}
+the build the kernel with make -s -j$(nproc)
+
+now we build the ZFS kernel module
+```
+cd to zfs build folder
+sudo make install
 ```
 
-now we can install the kernel with all the modules. That means build the initial ram file system from the compiled kernel and its modules:
-```
-sudo make install -j $(nproc)
-```
-
-
-## Verify everything should work
+#### Verify the versions
 check that the zfs module exists: /lib/modules/<kernel version>/extra/zfs.ko
 check its kernel version matches: `modinfo /lib/modules/<kernel version>/extra/zfs.ko`
 this should output something containing: vermagic: <kernel version>
 
-## Debugging
+### Combining kernel and ZFS
+Here we combine the kernel and its modules (now containing ZFS) to an initial ram file system: `initrd.img`. Luckily for us, the kernels make file can do this for us. The kernel modules however contain a ton of debug information in there present state. If we were to build an `initrd.img` now it would be around 800 Megabytes (MB). The typical boot partition is only around 300 MB.
+
+To strip the debug info from all the kernel modules we run `strip`.
+```
+cd /lib/modules/<new_kernel>
+sudo find . -name "*.ko" -exec strip --strip-unneeded {} +
+```
+Now the resulting `initrd.img` will be around 120 MB.
+
+Lets build and install it! Move back to the root of the kernel sources you downloaded (for me that is `/build/linux-<version>`). Then run:
+```
+sudo make install -j $(nproc)
+```
+
+Take care to ensure `initrd.img-previous` and `vmlinuz-previous.efi` are set to a working kernel, if you are trying this for a second time (see Troubleshooting EFI full).
+
+Reboot!
+Remember if anything went wrong you should be able to boot to your previous kernel. 
+
+## Troubleshooting
 ### the zfs pool is not imported on boot
 `zfs-import-cache` systemd service not running with error: ConditionFileNotEmpty=/usr/local/etc/zfs/zpool.cache. That service runs on boot and imports the pool by running zpool import. It looks like this:
 
@@ -93,7 +122,7 @@ From the systemd [docs](https://www.freedesktop.org/software/systemd/man/systemd
 
 If we get the 
 
-### Efi full, too large initrd.img
+### EFI full, too large initrd.img
 sort all the files in the efi partition by size:
 ```bash
 du -h /boot/efi | sort -n | tail -10
