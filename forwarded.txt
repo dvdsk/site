@@ -3,3 +3,4 @@
 thesis https://github.com/dvdsk/Thesis
 projects posts/projects
 to_build_on posts/crates_to_build_on
+renewc https://github.com/dvdsk/renewc
