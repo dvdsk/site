@@ -4,6 +4,7 @@ date: 2022-03-17T16:11:15+02:00
 draft: true
 ---
 
+Recently I got a newly released GPU. To use it on Linux however I needed the latest kernel and mesa driver. The latter was straightforward however the kernel proved tricky as I use ZFS. While there are a number of text how to compile a kernel a guide on how to do that _and fold in ZFS_ was missing. This guide takes you through the process of building both ZFS and a mainline kernel from source from my perspective, that of an intermediate Linux user.
 
 ### Sources and dependencies
 Check te META file from [OpenZFS on Linux](https://github.com/openzfs/zfs) for the maximum supported Linux version. 

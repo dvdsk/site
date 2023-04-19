@@ -1,5 +1,5 @@
 ---
-title: "Testing needs unsafe"
+title: "Unsafe testing"
 date: 2023-04-18
 draft: true
 ---
@@ -14,7 +14,7 @@ The cool thing about [renewc](davidsk.dev/renewc) is that if things go wrong it 
 
 ```rust
 #[test]
-fn diagnose_haproxy_bind() {
+fn haproxy_binds_port() {
     let fake_haproxy = spawn_fake_haproxy();
     let mut config = Config::for_test();
     config.port = fake_haproxy.port;
@@ -26,7 +26,7 @@ fn diagnose_haproxy_bind() {
 
 We start a fake HAProxy that binds to any free port. Then we set the config to the port fake HAProxy is using. It will now fail when it tries to host a secret on that port. Finally, we check if the error contains the hint about HAProxy forwarding.
 
-This fails... Let's print the error, we get: 
+Let's run it! This fails... Let's print the error, we get: 
 
 ```bash
 Error:
@@ -36,15 +36,16 @@ Error:
    3: Address in use (os error 98)
 
 Note: The port is being used by:
-	- `diagnostic-f6`
+	- `diagnostic-f27`
 ```
 
-It figured out the port was already used but not by anyone called "haproxy". Something is wrong with our `fake_haproxy`. 
+It figured out the port was already used but not by anyone called "haproxy". Something may be wrong with our `fake_haproxy`. 
 
 ```rust
 pub fn spawn_fake_haproxy() -> FakeHAProxy {
     let binder = TcpListener::bind("127.0.0.1:0").unwrap();
     let port = binder.local_addr().unwrap().port();
+    println!("fake haproxy listening on: {port}");
     let handle = thread::Builder::new().name("haproxy".into()).spawn(move || {
         for _ in binder.incoming() {}
     });
@@ -52,7 +53,51 @@ pub fn spawn_fake_haproxy() -> FakeHAProxy {
 }
 ```
 
-The thread with name `haproxy` gets recognized by our code as `diagnostics-f6`... Now I was already using this in 'production' (this very server) therefore maybe the test was wrong? I will be honest here I wasted some time doubting `Builder::name` trying the crate `proctitle` to set the name. Let's skip over that here.
+The thread with name `haproxy` gets recognized by our code as `diagnostics-f27`... Now I was not already using this in 'production' therefore the bug was probably in the test. I will be honest here I wasted some time doubting `Builder::name` trying the crate[^2] `proctitle` to set the name. Let's skip over that here. 
+
+Let's take a closer look at `spawn_fake_haproxy`. We add an endless loop before the tests `assert`, that gives us time to actually see what is going on. I used `netstat` however we are not supposed to anymore as its deprecated. Instead, we will use `ss` part of the `iproute` tools. Those interface with the kernel in the same way as [renewc's](davidsk.dev/renewc) does through the `netstat2-rs` crate. 
+
+```bash
+ss -ap | grep 42511
+tcp LISTEN 0 128 127.0.0.1:42511 0.0.0.0:* users:(("diagnostics-f27",pid=55102,fd=6))
+```
+
+We let `ss` know we want to see all sockets and to show the processes using them. Then we filter out any sockets not using the port fake HAProxy is listening on (42511). 
+
+Well `renewc` isn't wrong the OS also sees the process as diagnostics-f27[^3]. Taking a look with process status or as I know it `ps aux`. 
+
+```bash
+USER  PID   .... COMMAND
+david 55102 .... /home/david/Documents/renewc/target/debug/deps/diagnostics-f27a04fdd8adb5f0 haproxy_binds_port
+```
+
+Strange, so here it gets the name `haproxy_binds_port` where `ss` seems to be showing the first 15 characters of the test binaries name. We ran the test using `cargo test haproxy_binds_port`, that explains the name process status is showing. As a spend some time off page setting the process name manually I know about `PR_SET_NAME` from the `prctl` man pages. There we learn that names longer then 15 bytes are truncated. 
+
+On Linux the OS exposes a ton of info to us via the file system. Process related info lives in `/proc/<PID>`. Let's explore around!
+```bash
+cat /proc/55102/comm                                                                   ✔
+diagnostics-f27
+cat /proc/55102/cmdline
+/home/david/Documents/renewc/target/debug/deps/diagnostics-f27a04fdd8adb5f0haproxy_binds_port
+```
+
+So the command line contains the full binary name and its arguments whereas comm has the process name. Neither mentions HAProxy, so where does our thread name come into play?
+
+```bash
+ls /proc/$PID/task
+55102  55103  55104
+```
+
+More process identifiers! These tasks must be the threads: the first is the test harness, the second our test function and finally the named thread it spawned. Is 164682 named "haproxy"?
+
+```bash
+cat /proc/164680/task/164682/comm                                                       ✔
+haproxy
+```
+
+Yes it is! So naming the thread is working but `renewc` isn't working with thread names but with process names?
+
 
 
 [^1]: This is the simplest method known as `http-01` there are two others `dns-01` and `tls-alpn-01`.
+[^2]: In rust external libraries are called crates.
