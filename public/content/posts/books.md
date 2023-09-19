@@ -6,7 +6,7 @@ draft: false
 
 How to become a great software developer? While a Computer Science degree can help, it's not the answer though. I won't pretend I have it either, I do however tend to give out the same list of books whenever the subject comes up. 
 
-I would suggest starting at the top, but start wherever you like. It's better to read anything then never start right?  
+I would suggest starting at the top, but start wherever you like. It's better to read anything then never start right? If you get tired of reading I added some related talks.
  
 -----
 
@@ -17,7 +17,10 @@ I would suggest starting at the top, but start wherever you like. It's better to
     by _David Thomas_ and _Andrew Hunt_
 
 3. Refactoring  
-    by _Martin Fowler_
+    by _Martin Fowler_  
+    Related talks:  
+    - [Refactoring is Not Just Clickbait](https://www.youtube.com/watch?v=NMPeAW2RWdc)  
+        by _Kevlin Henney_
 
 4. Test-Driven Development by Example  
     by _Kent Beck_
