@@ -30,6 +30,7 @@ You are probably familiar with backtraces, often shown as a list of functions yo
 #### Tests
 - checking float equality: [float_eq](https://crates.io/crates/float_eq) \
 	basic usage: `assert_float_eq!(a, b, ulps <= 1)` for more see: [docs](https://jtempest.github.io/float_eq-rs/book/tutorials/basic_usage.html)
+- temporary dirs and files: [tempfile](https://crates.io/crates/tempfile)
 
 #### Command Line
 - Argument parsers: [clap](https://crates.io/crates/clap)
@@ -53,6 +54,7 @@ You are probably familiar with backtraces, often shown as a list of functions yo
 
 #### Gui
 - Cross platform framework: [iced](https://crates.io/crates/iced)
+- Text UI: [ratatui](https://crates.io/crates/ratatui)
 
 #### Other
 - Time and date: [time](https://crates.io/crates/time)
@@ -62,6 +64,7 @@ You are probably familiar with backtraces, often shown as a list of functions yo
 #### Standard lib expansion
 - Bounded queue: [crossbeam-channel](https://crates.io/crates/crossbeam-channel)
 - Derive traits: [derivative](https://crates.io/crates/derivative)
+- Iterators: [itertools](https://crates.io/crates/itertools)
 
 #### Embedded
 - Async runtime: [embassy](https://github.com/embassy-rs/embassy)
