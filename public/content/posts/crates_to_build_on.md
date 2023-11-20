@@ -38,6 +38,7 @@ You are probably familiar with backtraces, often shown as a list of functions yo
 #### Runtime
 - Async runtime: [tokio](https://crates.io/crates/tokio)
 - Macros and functions making async easier: [futures](https://crates.io/crates/futures)
+- (Experimental) however I can not live without it: [futures](https://crates.io/crates/futures-concurrency)
 
 #### Web
 - Http client: [reqwest](https://crates.io/crates/reqwest) (async, optionally blocking)
