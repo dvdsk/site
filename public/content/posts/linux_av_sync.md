@@ -21,8 +21,8 @@ In _EasyEffects_
  	- Under input devices ensure your microphone is picked up as default of select your microphone manually
 	- Under Output Devices ensure default is not selected and pick a device that can not output sound!
 	On my machine EasyEffects outputs whatever comes in over the microphone to the output device leading to a **feedback loop** that gets **painfully loud**. Picking a device that does not output audio, such as an unplugged headphone port, ensures this won't hurt you.
- - Go to the `Input` tab at the top of the screen. Now click the tab `plugins`
- - left top column `Add Plugins` add the `delay` plugin
+ - Go to the `Input` tab at the top of the screen.
+ - left top column `Add Effect` add the `delay` plugin
  - toggle the button in the lower right corner to enable processing
  - use the spectrogram at the top to verify the delay is working (clap and see a delayed response in the spectrogram)
  - To use the now delayed sound choose the `EasyEffects Source` in your VoIP program.
