@@ -28,6 +28,9 @@ I would suggest starting at the top, but start wherever you like. It's better to
 5. Clean Architecture A Craftsman's Guide to Software Structure and Design  
     by _Robert C. Martin_  
     The Appendix is a great read, might be a good place to begin if you find the start a bit too technical.
+    Alternatively you could read Clean Code, however most of its advise is
+    already discussed in _The Pragmatic Programmer_ and _Refactoring_.
+    [This conversation](https://github.com/cmuratori/misc/blob/main/cleancodeqa.md) between Robert and Casey in response to [Casey's critisim on Clean Code](https://www.youtube.com/watch?v=tD5NrevFtbU) is a great addition or summary of some of the points.
 
 # Fantasy
 It's important to have fun :)
