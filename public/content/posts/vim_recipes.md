@@ -17,6 +17,10 @@ Find a text pattern and execute vim grammar on all lines that match. This one is
 5. Undo the changes done while you where recording the macro (or they will be applied twice)
 5. Use the magic: `:cdo norm! @q`. Also known as: quick fix do, go to normal mode, run macro in register q.
 
+tip: (temporarily) set your auto-formatter to never break lines and reformat your
+codebase. For rust format: add `max_width=400` and `chain_width=200` to
+`rustfmt.toml`.
+
 ## Custom (tele)scope
 LSP's are great for navigating through code. I constantly use _go to definition_ and _lsp_references_ especially for locating functions. Some languages (lua, python) have semantics that make it hard for an LSP to find these or the LSP isnt quite there yet. I used to open live grep ([telescope](https://github.com/nvim-telescope/telescope.nvim)) and search for the function name name with a `(` attached. This small gist automates and improves upon that by limiting the search to relevant files and picking the function pattern automatically.
 
