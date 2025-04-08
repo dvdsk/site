@@ -12,12 +12,14 @@ Find a text pattern and execute vim grammar on all lines that match. This one is
 
 1. Find all instances you want to change using [telescopes's](https://github.com/nvim-telescope/telescope.nvim) live regex `builtin.live_grep`. It will search through all not git-ignored files in vims current working directory.
 2. Send the entries to the _quick fix list_ `Ctrl + q`
-3. Quick fix lists just openend. Go to the first item (press `enter`) or use `:cfirst`. 
+3. Quick fix lists just opened. Go to the first item (press `enter`) or use `:cfirst`. 
 4. Record a macro (I press q twice, recording in register q). Thanks the to previous step we start with the cursor at the exact place it will be when later executing the macro.
 5. Undo the changes done while you where recording the macro (or they will be applied twice)
 5. Use the magic: `:cdo norm! @q`. Also known as: quick fix do, go to normal mode, run macro in register q.
 
-tip: (temporarily) set your auto-formatter to never break lines and reformat your
+Tip: This does not work for some _command-line_ commands. Instead of `:cdo` use `:cnext | <the command line command>`. Then repeat once by pressing `@:` then hold `@` to iterate through the entire quick fix list calling the command
+
+Tip: (temporarily) set your auto-formatter to never break lines and reformat your
 codebase. For rust format: add `max_width=400` and `chain_width=200` to
 `rustfmt.toml`.
 
