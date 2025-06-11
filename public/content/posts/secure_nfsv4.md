@@ -213,3 +213,8 @@ Then simply mount the shared directory via:
 ```
 $CLIENT sudo mount asgard:/srv /mnt
 ```
+
+If this fails you need to restart the client machine. I have no idea why but it
+works :)
+
+At this point you should have working and securen fs mounts.
