@@ -33,6 +33,16 @@ file in `/etc/hosts`. I have a file server named *asgard*, it has local IP
 ## You must run kadmin as sudo
 At least when export keys, if you do not you will get the error `Permission denied while adding key to keytab` or `Key table file '/etc/krb5.keytab' not found while adding key to keytab`. That last one I could not find explained anywhere, lost quite some time on that. These errors occur because without sudo the keytab (usually at /etc/krb5.keytab) can not be read or created.
 
+## You must share ZFS datasets seperatly
+Given the datasets:
+```
+/srv/
+/srv/music
+/srv/pictures
+```
+You can not share only `/srv`. The share will mount but users will get
+`permission denied` on any file operation inside `music` & `pictures`.
+
 # Full Procedure on the Server
 This assumes you are building a basic file server such as a NAS:
 - You have one server you want to run NFS on
@@ -164,8 +174,38 @@ Then refresh the export using:
 ```
 $SERVER: sudo exportfs -rav
 ```
+### Configure id mapping
+File ownership & operations will be send with <name>@<realm> instead of user and
+group id's. Kerberos takes care of authenticating that <name> actually belongs
+to the user.
 
-And we are done! Onwards to the client!
+The NFS server and client need to now how <name>@<realm> maps to local unix
+users and groups. The server translates this using `idmapd` based on the content
+of `/etc/idmapd.conf`. 
+Most guides describe how to couple idmap to a large organizations user database.
+Since we are building a simple NAS we will use a fully menual (static)
+configuration. For each kerberos principle we describe in `idmapd.conf` which
+local user it corrosponds to.
+
+This is a basic `idmapd.conf` for the realm `YGGDRASIL`. Actions performed and files owned by Kerberos principle `david` should be translated to actions performed and files owned by local UNIX user `david`.
+```
+[General]
+Verbosity = 0
+# set your own domain here, if it differs from FQDN minus hostname
+Domain = yggdrasil
+
+[Mapping]
+Nobody-User = nobody
+Nobody-Group = nogroup
+
+[Translation]
+Method = static
+GSS-methods = static
+
+[Static]
+david/admin@YGGDRASIL = root
+david@YGGDRASIL = david
+```
 
 # Procedure for each Client
 ## Add the server to hosts
@@ -194,12 +234,24 @@ If you did not get prompted you probably have exisitng configuration. You can
 try and remove that using `sudo apt purge krb5-user krb5-config`.
 
 ## Add Kerberos user for NFS client
-Add a kerberos principle for the NFS client. For this we need to log in to the
-kerberos admin server from the client. We do so by passing `-p <admin user>` to `kadmin` instead of using `kadmin.local` with `sudo`. Then we pass the command to execute to `kadmin` using `-q`.
+We need two or more kerberos principle for each client. 
+- One for the NFS client software, it must be named: `nfs/<host>` where host is
+  the hostname for the client machine.
+- One for each user on the machine that needs to access the share. It is easiest
+  if it has the same name as the local user who is going to use nfs. Its okay to 
+  share one between multiple clients machines.
+
+We will use the kerberos admin server from the client. The advantage to that is
+that we can use `ktadd` on the client and the key will then appear in the
+clients local *keytab*. We use the kerberos admin server remotly by passing `-p
+<admin user>` to `kadmin` instead of using `kadmin.local` with `sudo`. We still 
+pass the command to execute to `kadmin` using `-q`.
 
 ```
-$CLIENT sudo kadmin -p david/admin -q "addprinc -randkey nfs/dmain" 
-$CLIENT sudo kadmin -p david/admin -q "ktadd nfs/dmain" 
+$CLIENT sudo kadmin -p david/admin -q "addprinc -randkey nfs/<host>" 
+$CLIENT sudo kadmin -p david/admin -q "ktadd nfs/<host>" 
+$CLIENT sudo kadmin -p david/admin -q "addprinc <local username>" 
+$CLIENT sudo kadmin -p david/admin -q "ktadd <local username>" 
 ```
 
 ## Install the NFS client & Mount
@@ -209,6 +261,16 @@ the extra kerberos services used for NFS will not be enabled and started.
 $CLIENT sudo apt install nfs-common
 ```
 
+### Configure id mapping
+Just like on the server we have to define a mapping between local users and
+Kerberos users. The NFS client uses `nfsidmap` instead of `idmapd` however they
+both read she same config file. Copy the one you made for the server to
+`/etc/idmapd.conf`.
+
+### Done
+
+Now you need to log in as Kerberos user using `kinit`.
+
 Then simply mount the shared directory via:
 ```
 $CLIENT sudo mount asgard:/srv /mnt
@@ -217,4 +279,26 @@ $CLIENT sudo mount asgard:/srv /mnt
 If this fails you need to restart the client machine. I have no idea why but it
 works :)
 
-At this point you should have working and securen fs mounts.
+At this point you should have working and secure fs mounts. The permissions are
+all or nothing at this point. While you can maybe get ACL's working I decided I
+spend enough time on all this nonesens.
+
+<!---->
+<!-- In the next section we will look at more fine grained permissions. -->
+<!---->
+<!-- # NFSv4 access control lists -->
+<!-- We can control which directories on the server a kerberos principle (user) can -->
+<!-- access.  -->
+<!---->
+<!-- ``` -->
+<!-- sudo apt-get install acl -->
+<!-- <!-- sudo apt install nfs4-acl-tools --> -->
+<!-- ``` -->
+<!---->
+<!-- <!-- https://fjordtek.com/categories/news/2021/kerberos-secured-network-file-shares-practical-guide-for-kerberized-nfsv4 --> -->
+<!-- <!-- https://www.illumos.org/books/zfs-admin/acls.html --> -->
+<!---->
+<!-- <!-- TODO ID mapper --> -->
+<!-- <!-- https://manpages.ubuntu.com/manpages/lunar/en/man8/nfsidmap.8.html --> -->
+<!-- <!-- https://manpages.ubuntu.com/manpages/lunar/en/man8/idmapd.8.html --> -->
+<!---->
