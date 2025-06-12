@@ -14,8 +14,10 @@ fi
 rsync -r public/public sgc:/tmp/
 rsync -r forwarded.txt sgc:/tmp/
 
-
-cross build --target=aarch64-unknown-linux-musl $BUILD_ARG
+# silly rustls having c code :(
+export CC=aarch64-linux-gnu-gcc
+export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=aarch64-linux-gnu-gcc
+cargo build --target=aarch64-unknown-linux-musl $BUILD_ARG
 rsync -vh --progress \
   target/aarch64-unknown-linux-musl/$RELEASE/webserver \
   $SERVER:/tmp/

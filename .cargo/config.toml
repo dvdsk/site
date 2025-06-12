@@ -1,0 +1,6 @@
+[target.aarch64-unknown-linux-gnu]
+linker = "aarch64-linux-gnu-gcc"            # linker to use
+
+[env]
+CC="aarch64-linux-gnu-gcc"
+CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER="aarch64-linux-gnu-gcc"

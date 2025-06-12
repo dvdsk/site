@@ -236,7 +236,7 @@ try and remove that using `sudo apt purge krb5-user krb5-config`.
 ## Add Kerberos user for NFS client
 We need two or more kerberos principle for each client. 
 - One for the NFS client software, it must be named: `nfs/<host>` where host is
-  the hostname for the client machine.
+  the hostname for the client machine. Check what it is using `hostname`.
 - One for each user on the machine that needs to access the share. It is easiest
   if it has the same name as the local user who is going to use nfs. Its okay to 
   share one between multiple clients machines.
