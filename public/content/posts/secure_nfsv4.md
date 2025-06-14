@@ -227,7 +227,7 @@ For the *Kerberos servers* & *adminstrative servers* enter the host name you
 just added to the *hosts file*.
 
 ```
-$CLIENT sudo apt install krb5-user
+$CLIENT: sudo apt install krb5-user
 ```
 
 If you did not get prompted you probably have exisitng configuration. You can
@@ -248,40 +248,188 @@ clients local *keytab*. We use the kerberos admin server remotly by passing `-p
 pass the command to execute to `kadmin` using `-q`.
 
 ```
-$CLIENT sudo kadmin -p david/admin -q "addprinc -randkey nfs/<host>" 
-$CLIENT sudo kadmin -p david/admin -q "ktadd nfs/<host>" 
-$CLIENT sudo kadmin -p david/admin -q "addprinc <local username>" 
-$CLIENT sudo kadmin -p david/admin -q "ktadd <local username>" 
+$CLIENT: sudo kadmin -p david/admin -q "addprinc -randkey nfs/<host>" 
+$CLIENT: sudo kadmin -p david/admin -q "ktadd nfs/<host>" 
+$CLIENT: sudo kadmin -p david/admin -q "addprinc <local username>" 
+$CLIENT: sudo kadmin -p david/admin -q "ktadd <local username>" 
 ```
 
 ## Install the NFS client & Mount
 We need to do this *after* installing and setting up Kerberos on the client or
 the extra kerberos services used for NFS will not be enabled and started.
 ```
-$CLIENT sudo apt install nfs-common
+$CLIENT: sudo apt install nfs-common
 ```
 
-### Configure id mapping
+## Configure id mapping
 Just like on the server we have to define a mapping between local users and
 Kerberos users. The NFS client uses `nfsidmap` instead of `idmapd` however they
 both read she same config file. Copy the one you made for the server to
 `/etc/idmapd.conf`.
 
-### Done
-
+## Testing the mount
 Now you need to log in as Kerberos user using `kinit`.
 
 Then simply mount the shared directory via:
 ```
-$CLIENT sudo mount asgard:/srv /mnt
+$CLIENT: sudo mount asgard:/srv /mnt
 ```
 
 If this fails you need to restart the client machine. I have no idea why but it
 works :)
 
-At this point you should have working and secure fs mounts. The permissions are
-all or nothing at this point. While you can maybe get ACL's working I decided I
-spend enough time on all this nonesens.
+## Auto mount on login/boot
+Currently we need to mount with sudo *and* get a kerberos ticket. To get a
+kerberos ticket we have to type in a password It gets worse kerberos tickets expire (after around a day). Lets automate this by:
+- storing a keytab for the users principle in its homedir and use a keytab for
+  authentication instead of the password.
+- set up a systemd serice to request the ticket and renew it periodically after
+  the user logs in.
+- add the mount to fstab so its always mounted on boot (though without a valid
+  kerberos ticket you can not use it)
+
+### Passwordless kerberos tickets
+Figure out the KVNO:
+```
+$CLIENT: kinit <username>
+$CLIENT: kvno <username>
+$CLIENT: kdestroy -p <username>
+```
+
+Generate a keytab for the user
+```
+$CLIENT: ktutil
+ktutil: addent -password -p <NAME> -k <KVNO> -e aes128-cts-hmac-sha1-96 -f
+ktutil: wkt /home/<username>/.local/keytab
+ktutil: q
+```
+
+This should not prompt for a password:
+```
+$CLIENT: kinit -kt ~/.local/keytab -p <principle name>
+```
+
+### Automate ticket request and renewal
+For this we need the programs: `k5start` and `krenew` lets install them:
+```
+$CLIENT: sudo apt install kstart
+```
+
+Now we want to run `k5start` once the user logs followed by `krenew`. We use
+systemd to set that up.
+
+This will open up an editor where you can write the service:
+```
+$CLIENT: systemctl edit --user --force --full kerberos_mount.service
+```
+
+Enter the following, make sure to replace <user> with the name of the principle:
+```
+[Unit]
+Description=Initializes, caches and renews Kerberos ticket
+After=default.target
+
+[Service]
+Type=exec
+RemainAfterExit=yes
+ExecStart=/usr/bin/k5start \
+	# run in daemon mode, recheck ticket every  30 minutes \
+	-K 30 \
+	# authenticate using keytab rather then asking for a password \
+	-f %h/.local/keytab \
+	# store this file as ticket cache \
+	-k /tmp/krb5cc_%U \
+	# principle to get tickets for \
+	<username>
+
+[Install]
+WantedBy=default.target
+```
+
+Enable and start the service:
+```
+$CLIENT: systemctl enable --now --user kerberos_mount.service
+```
+
+### Mount on boot in fstab
+
+Add something like this to fstab (use: `sudoedit /etc/fstab`): 
+```
+asgard:/srv/music  /home/david/Music          nfs4  nofail,rw,sec=krb5
+```
+This will mount the share `music` in `/srv/music` on the server named `asgard`
+in the host file to the folder `/home/david/Music`. Do not forget the `nofail`
+option or the system will not boot if the file server is down.
+
+Verify fstab entry by:
+- unmounting the share using `sudo umount Music` 
+- using `sudo mount -a` witout rebooting to make sure its correct:
+```
+$CLIENT: sudo mount -a
+```
+
+# Appendix
+
+Some specific setups I need.
+
+## Mpd systemd & kerberos
+I run *MPD* (music play deamon) as a seperate user (named `mpd` in group `mpd`).
+The systemd service listed above will not work since the `mpd` user is never
+logged in. Rather the *MPD* process is started as root and drops privilleges. 
+
+Instead of starting the ticket renewel when the `mpd` user logs in (which it never
+will) we just start it on boot.
+
+The systemd service for ticket renewel is almost the same. The changes are:
+- Make it run as user `mpd` in the group `mpd`
+- Hard code the principle as `mpd`
+- Hard code the ticket cache location as `/tmp/krb5cc_mpd`
+- Use the keytab `/mpd_keytab` (the mpd user has no home and so no .local)
+
+This results in the systemd service file:
+```
+[Unit]
+Description=Initializes, caches and renews Kerberos ticket
+After=default.target
+
+[Service]
+Type=exec
+User=mpd
+Group=mpd
+RemainAfterExit=yes
+ExecStart=/usr/bin/k5start \
+	# run in daemon mode, recheck ticket every  30 minutes \
+	-K 30 \
+	# authenticate using keytab rather then asking for a password \
+	-f /mpd_keytab \
+	# store this file as ticket cache \
+	-k /tmp/krb5cc_mpd \
+	# principle to get tickets for \
+	mpd
+
+[Install]
+WantedBy=default.target
+```
+I've named this service kerberos_mount_for_mpd. 
+
+Lets make the *MPD* service require the systemd service above. That way *MPD* will
+report an error if the `kerberos_mount_for_mpd` service fails. We do this by
+editing the service using:
+```
+$CLIENT: sudo systemctl edit --full mpd
+```
+
+The we simple:
+- Append ` kerberos_mount_for_mpd.service` to the `After=` line
+- Add a `Requires=kerberos_mount_for_mpd.service` line below the `After` one
+
+For the rest follow the normal client procedure.
+
+<!-- Lets fix that. -->
+<!---->
+<!-- At this point you should have working and secure fs mounts. The permissions are -->
+<!-- all or nothing at this point. While you can maybe get ACL's working I decided I -->
+<!-- spend enough time on all this nonesens. -->
 
 <!---->
 <!-- In the next section we will look at more fine grained permissions. -->
