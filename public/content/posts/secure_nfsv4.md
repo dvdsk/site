@@ -270,6 +270,10 @@ both read she same config file. Copy the one you made for the server to
 ## Testing the mount
 Now you need to log in as Kerberos user using `kinit`.
 
+I have ran into an issue where I get invalid password when trying `kinit`.
+Running `sudo kadmin -p david/admin -q change_password <local username>` to set
+the password again seems to resolve that.
+
 Then simply mount the shared directory via:
 ```
 $CLIENT: sudo mount asgard:/srv /mnt
@@ -323,7 +327,7 @@ This will open up an editor where you can write the service:
 $CLIENT: systemctl edit --user --force --full kerberos_mount.service
 ```
 
-Enter the following, make sure to replace <user> with the name of the principle:
+Enter the following:
 ```
 [Unit]
 Description=Initializes, caches and renews Kerberos ticket
@@ -340,7 +344,7 @@ ExecStart=/usr/bin/k5start \
 	# store this file as ticket cache \
 	-k /tmp/krb5cc_%U \
 	# principle to get tickets for \
-	<username>
+	%u
 
 [Install]
 WantedBy=default.target
