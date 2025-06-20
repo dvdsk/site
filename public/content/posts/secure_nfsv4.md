@@ -449,12 +449,16 @@ item.
 
 Use the command:
 ```
-sudo setfacl --default --modify group:<GroupName>:rwx <share folder>
+sudo setfacl --recursive --default --modify group:<GroupName>:rwx <share folder>
 ```
+Note: we use `--recursive` as there may already be subdirs. We want those to
+also have the *default ACL*.
+Note: `ls -la` will not show the group from the ACL as being the owning group.
+But the ACL will determine the permissions.
 
 For example:
 ```
-sudo setfacl --default --modify group:music:rwx /srv/music
+sudo setfacl --recursive --default --modify group:music:rwx /srv/music
 ```
 Makes any newly created directory or folder readable, writable and
 executable/explorable by any user in the *music* group.
