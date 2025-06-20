@@ -429,6 +429,13 @@ The we simple:
 
 For the rest follow the normal client procedure.
 
+## Permission denied on the client
+
+- Is the user on the client in the same group on the file server as the directory?
+- Is the user on the client mapped to the right user on the file server?
+- Has the folder/file the correct owning group?
+- Are the permissions set correctly for that group?
+
 <!-- Lets fix that. -->
 <!---->
 <!-- At this point you should have working and secure fs mounts. The permissions are -->
