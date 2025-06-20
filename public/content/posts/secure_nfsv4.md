@@ -436,6 +436,29 @@ For the rest follow the normal client procedure.
 - Has the folder/file the correct owning group?
 - Are the permissions set correctly for that group?
 
+## Have new items assume the group of their parent dir
+
+We need to set a *default ACL* on the parent dir using `setfacl --default`. This
+must be done on the file server. Such an ACL will be applied to every new file
+and directory regardless of who created them. *Default ACL's* are prefixed with
+`default:` when displayed using `getfacl`.
+
+Ususally we want every file or directory created inside the share to be owned by
+the same group. We leave the owner alone that way we can still see who made the
+item.
+
+Use the command:
+```
+sudo setfacl --default --modify group:<GroupName>:rwx <share folder>
+```
+
+For example:
+```
+sudo setfacl --default --modify group:music:rwx /srv/music
+```
+Makes any newly created directory or folder readable, writable and
+executable/explorable by any user in the *music* group.
+
 <!-- Lets fix that. -->
 <!---->
 <!-- At this point you should have working and secure fs mounts. The permissions are -->
